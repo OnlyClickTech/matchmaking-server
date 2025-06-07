@@ -37,24 +37,28 @@ MONGO_URI=mongodb://localhost:27017/matchmaking
 
 ### 1. Taskmaster connects
 
-`{
+```
+{
   "type": "register",
   "role": "taskmaster",
   "id": "task001",
   "specialization": "Electrician"
-}`
+}
+```
 
 ### 2. User connects:
 
-`{
+```
+{
   "type": "register",
   "role": "user",
   "id": "user123"
-}`
+}
+```
 
 ### 3. User starts matchmaking:
 
-`
+```
 {
 "type": "start_matchmaking",
 "userId": "user123",
@@ -64,27 +68,38 @@ MONGO_URI=mongodb://localhost:27017/matchmaking
 "lng": 83.2185
 }
 }
+```
 
 ### Taskmaster accepts:
 
+```
 {
 "type": "accept_match",
 "matchId": "MATCH_OBJECT_ID",
 "taskmasterId": "task001",
 "accepted": true
 }
+```
+
+---
 
 ## Errors
 
 When no taskmasters are available:
-`{
+
+```
+{
   "type": "error",
   "message": "Unable to find nearby taskmasters"
-}`
+}
+```
+
+---
 
 ## Directory Structure
 
 ```
+matchmaking-server
 ├── config
 │   └── connectDB.js
 ├── server.js
