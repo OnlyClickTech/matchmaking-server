@@ -1,4 +1,11 @@
 const Match = require('../models/match');
+const axios = require('axios');
+require('dotenv').config();
+
+if (!process.env.TM_BASE_URL) {
+  throw new Error('BACKEND_BASE_URL is not defined in .env');
+}
+
 
 const clients = {
   user: {},
@@ -13,6 +20,11 @@ function socketHandler(wss) {
 
         if (message.type === 'register') {
           const { role, id, specialization } = message;
+          
+          if (!clients[role]) {
+            clients[role] = {};
+          }
+          clients[role][id] = ws;
         
           if (role === 'taskmaster') {
             if (!clients.taskmaster[specialization]) {
@@ -30,7 +42,7 @@ function socketHandler(wss) {
         }
 
         if (message.type === 'start_matchmaking') {
-          const { userId, serviceType } = message;
+          const { userId, serviceType, location } = message; 
         
           const match = new Match({
             userId,
@@ -40,15 +52,43 @@ function socketHandler(wss) {
           });
         
           await match.save();
-        
           console.log('📦 Match created:', match._id.toString());
         
-          broadcastToSpecialists(serviceType, {
-            type: 'new_request',
-            matchId: match._id,
-            userId
-          });
+          try {
+            const response = await axios.get(`${process.env.TM_BASE_URL}/api/taskmaster/nearby`, {
+              params: {
+                category: serviceType,
+                lat: location.lat,
+                lng: location.lng
+              }
+            });
+        
+            const nearbyTaskmasters = response.data;
+
+            console.log("Attempting to broadcast:");
+            console.log("Taskmaster list:", nearbyTaskmasters.map(tm => tm.masterId));
+            console.log("Clients:", Object.keys(clients.taskmaster));
+        
+            nearbyTaskmasters.forEach(taskmaster => {
+              const socket = clients.taskmaster[taskmaster.masterId];
+              if (socket && socket.readyState === socket.OPEN) {
+                console.log(`Sending to ${taskmaster.masterId}`);
+                socket.send(JSON.stringify({
+                  type: 'new_request',
+                  matchId: match._id,
+                  userId
+                }));
+              }
+            });
+        
+            console.log(`Broadcast sent to ${nearbyTaskmasters.length} taskmasters.`);
+        
+          } catch (err) {
+            console.error('Failed to find nearby taskmasters:', err.message);
+            ws.send(JSON.stringify({ type: 'error', message: 'Unable to find nearby taskmasters' }));
+          }
         }
+        
 
         if (message.type === 'accept_match') {
           const { matchId, taskmasterId, accepted } = message;
@@ -79,7 +119,6 @@ function socketHandler(wss) {
         
             ws.send(JSON.stringify({ type: 'match_accepted', matchId }));
           } else {
-            // optional: store declined info or just ignore
             ws.send(JSON.stringify({ type: 'match_declined', matchId }));
           }
         }
@@ -98,20 +137,5 @@ function socketHandler(wss) {
   });
 }
 
-function broadcastToSpecialists(specialization, payload) {
-  const specialistGroup = clients.taskmaster[specialization];
-  if (!specialistGroup) {
-    console.log(`⚠️ No taskmasters for specialization: ${specialization}`);
-    return;
-  }
-
-  console.log(`🔁 Broadcasting to ${specialization} taskmasters`);
-
-  Object.values(specialistGroup).forEach(ws => {
-    if (ws.readyState === ws.OPEN) {
-      ws.send(JSON.stringify(payload));
-    }
-  });
-}
 
 module.exports = socketHandler;
