@@ -35,6 +35,9 @@ MONGO_URI=mongodb://localhost:27017/matchmaking
 
 ## Workflow
 
+connect on ws://localhost:5656 on Postman WebSockets 
+make sure taskmaster backend is online before connecting
+
 ### 1. Taskmaster connects
 
 ```
