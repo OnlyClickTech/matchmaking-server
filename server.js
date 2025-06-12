@@ -1,16 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
-const WebSocket = require('ws');
+const { Server } = require('socket.io');
 const connectDB = require('./config/connectDB');
-const socketHandler = require('./socket/socketHandler');
+const socketHandler = require('./socket/index');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const io = new Server(server, {
+  cors: {
+    origin: "*", 
+  }
+});
 
 connectDB();
-socketHandler(wss);
+socketHandler(io);
 
 const PORT = process.env.PORT || 5656;
 server.listen(PORT, () => {

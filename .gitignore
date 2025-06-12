@@ -1,2 +1,6 @@
 node_modules
 .env
+testClient.js
+taskmasterClient.js
+taskmasterClient2.js
+taskmasterClient3.js
