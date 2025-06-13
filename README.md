@@ -9,7 +9,7 @@ This server uses **Socket.IO** to facilitate **real-time matchmaking** between u
 
 ---
 
-## 🗂️ Directory Structure
+## Directory Structure
 
 ```
 ├── controllers/
@@ -27,7 +27,7 @@ This server uses **Socket.IO** to facilitate **real-time matchmaking** between u
 
 ---
 
-## ✅ Registration Flow
+## Registration Flow
 
 **File**: `registerController.js`
 
@@ -40,7 +40,7 @@ Registers a socket as either a **user** or a **taskmaster** and stores it in mem
 
 ---
 
-## 🔁 Matchmaking Flow (Broadcast Style)
+## Matchmaking Flow (Broadcast Style)
 
 **File**: `matchmakingController.js`
 
@@ -62,7 +62,7 @@ Registers a socket as either a **user** or a **taskmaster** and stores it in mem
 
 ---
 
-## 📍 Matchmaking Flow (Nearby Sequential)
+## Matchmaking Flow (Nearby Sequential)
 
 **File**: `nearbyMatchmakingController.js`
 
@@ -84,7 +84,7 @@ Registers a socket as either a **user** or a **taskmaster** and stores it in mem
 
 ---
 
-## 🧠 In-Memory State Management
+## In-Memory State Management
 
 **File**: `timeoutManager.js`
 
@@ -105,7 +105,7 @@ Registers a socket as either a **user** or a **taskmaster** and stores it in mem
 
 ---
 
-## 🧩 Socket Event Bindings
+## Socket Event Bindings
 
 **File**: `socket/index.js`
 
@@ -126,15 +126,17 @@ socket.on("start_matchmaking", (data) => startMatchmaking(socket, data));
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
-| Key           | Description                            |
-| ------------- | -------------------------------------- |
-| `TM_BASE_URL` | Base URL of the backend taskmaster API |
+| Key           | Description                           |
+| ------------- | ------------------------------------- |
+| `TM_BASE_URL` | http://localhost:3000                 |
+| `PORT`        | 5656                                  |
+| `MONGO_URI`   | mongodb://localhost:27017/matchmaking |
 
 ---
 
-## 💡 Error Handling
+## Error Handling
 
 - Emits `error` events to the initiating user on failure (e.g., no taskmasters, DB errors).
 - Gracefully handles:
@@ -144,7 +146,7 @@ socket.on("start_matchmaking", (data) => startMatchmaking(socket, data));
 
 ---
 
-## 🔄 Timeout Logic Summary
+## Timeout Logic Summary
 
 Each nearby taskmaster is given **15 minutes** to respond. On no response:
 
@@ -153,7 +155,7 @@ Each nearby taskmaster is given **15 minutes** to respond. On no response:
 
 ---
 
-## 🚦 Match Status Values
+## Match Status Values
 
 | Status    | Description                     |
 | --------- | ------------------------------- |

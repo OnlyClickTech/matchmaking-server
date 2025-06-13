@@ -16,6 +16,7 @@ const clients = {
   }
   
   function removeClient(role, id) {
+    console.log("Removing client:", role, id);
     if (clients[role]?.[id]) delete clients[role][id];
   }
   

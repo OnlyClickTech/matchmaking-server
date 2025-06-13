@@ -1,6 +1,6 @@
 const Match = require('../models/match');
 const axios = require('axios');
-const { getClient } = require('../utils/clientManager');
+const { getClient, removeClient } = require('../utils/clientManager');
 const TM_BASE_URL = process.env.TM_BASE_URL;
 if (!process.env.TM_BASE_URL) {
   throw new Error('BACKEND_BASE_URL is not defined in .env');
@@ -46,6 +46,8 @@ async function acceptMatch(socket, { matchId, taskmasterId, accepted }) {
   
     const userSocket = getClient('user', match.userId);
     userSocket?.emit('match_complete', { taskmasterId });
+    removeClient('user', match.userId);
+    removeClient('taskmaster', taskmasterId);
     socket.emit('match_accepted', { matchId });
   } else {
     socket.emit('match_declined', { matchId });

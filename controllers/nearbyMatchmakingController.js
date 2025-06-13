@@ -1,6 +1,6 @@
 const Match = require('../models/match');
 const axios = require('axios');
-const { getClient } = require('../utils/clientManager');
+const { getClient, removeClient } = require('../utils/clientManager');
 const { saveMatchState, getMatchState, deleteMatch, setMatchTimeout } = require('../utils/timeoutManager');
 
 const TM_BASE_URL = process.env.TM_BASE_URL;
@@ -79,6 +79,8 @@ async function acceptNearbyMatch(socket, { matchId, taskmasterId, accepted }) {
     deleteMatch(matchId);
 
     userSocket?.emit('match_complete', { taskmasterId });
+    removeClient('user', match.userId);
+    removeClient('taskmaster', taskmasterId);
     socket.emit('match_accepted', { matchId });
     return;
   }
