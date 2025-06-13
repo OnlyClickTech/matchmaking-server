@@ -95,7 +95,7 @@ Registers a socket as either a **user** or a **taskmaster** and stores it in mem
 
 ---
 
-## 🔌 Client Management
+## Client Management
 
 **File**: `clientManager.js`
 
