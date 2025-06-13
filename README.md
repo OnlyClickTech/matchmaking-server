@@ -1,4 +1,4 @@
-# 📦 Matchmaking Server Documentation
+# Matchmaking Server Documentation
 
 ## Overview
 
